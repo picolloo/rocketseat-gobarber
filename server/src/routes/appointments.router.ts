@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { parseISO } from 'date-fns';
 
 import AppointmentController from '../controllers/Appointments.controller';
+import ShowAppointmentService from '../services/ShowAppointmentService';
 import CreateAppointmentService from '../services/CreateAppointmentService';
 
 const router = Router();
@@ -12,15 +13,15 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-  const { id } = req.params;
+  try {
+    const { id } = req.params;
 
-  const appointment = AppointmentController.show(id);
+    const appointment = ShowAppointmentService(id);
 
-  if (!appointment) {
-    return res.status(404).json({ message: 'Appointment not found' });
+    return res.status(201).json(appointment);
+  } catch (err) {
+    return res.status(404).json({ message: err.message });
   }
-
-  return res.status(201).json(appointment);
 });
 
 router.post('/', async (req, res) => {
